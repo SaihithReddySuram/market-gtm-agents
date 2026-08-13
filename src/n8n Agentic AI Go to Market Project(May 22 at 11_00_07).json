@@ -1,0 +1,607 @@
+{
+  "updatedAt": "2026-05-22T15:12:02.217Z",
+  "createdAt": "2026-05-20T19:59:36.182Z",
+  "id": "RNkN6dyHHeB4KAGj",
+  "name": "Agentic AI Go to Market Project",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d7c58681-9c0f-494f-88ce-5be1246e6645",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "29a9de49-c540-4a46-ba89-c5ea9783aaf7",
+              "name": "product_brief",
+              "value": "Create a market research and GTM plan for an AI-powered LMS SaaS for small and mid-sized schools.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f3d72f9a-369e-4c19-bbdc-c614518500ca",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        256
+      ],
+      "id": "9e2cd3f5-950a-4934-a2eb-31c598e6958c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGpy0u1gXD8r0cJ2",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "q": "={{ $json.product_brief }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        912,
+        400
+      ],
+      "id": "693871f3-907e-407a-8359-459c8a91434a",
+      "name": "Google search in SerpApi",
+      "credentials": {
+        "serpApi": {
+          "id": "XGBL9Rv0eOXd2ByQ",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"product_brief\": \"...\",\n\n  \"research_questions\": [\n    {\n      \"question\": \"...\",\n      \"answer\": \"...\",\n\n      \"sources\": [\n        {\n          \"title\": \"...\",\n          \"url\": \"...\",\n          \"evidence\": \"...\"\n        }\n      ]\n    }\n  ],\n\n  \"competitors\": [\n    {\n      \"name\": \"...\",\n      \"website\": \"...\",\n      \"positioning\": \"...\",\n      \"pricing_info\": \"...\",\n      \"source_url\": \"...\"\n    }\n  ],\n\n  \"key_insights\": [\n    \"insight 1\",\n    \"insight 2\",\n    \"insight 3\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        240
+      ],
+      "id": "908f95ae-d7ae-48fe-bd6d-ee71bbe20551",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        272
+      ],
+      "id": "86affa53-c33b-4d7d-930f-205563986aa9",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGpy0u1gXD8r0cJ2",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research the following product/business idea:{{ $json.output }}\n\nCollect evidence for:\n        1. Target market\n        2. Customer pain points\n        3. Competitors\n        4. Pricing examples\n        5. Market trends\n        6. GTM opportunities\n\nUse the search tool multiple times with different queries.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "a2e5caf1-b6aa-42e3-8178-5323fe608a8f",
+      "name": "Market Research Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Analyst Agent.\n\nAnalyze the research evidence below:\n\n{{JSON.stringify($json) }}\n\nCreate:\n1. Competitor table\n2. Pricing matrix\n3. SWOT analysis\n4. 4P marketing analysis\n5. Key GTM insights\n\nReturn clean markdown.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "e7cd7d25-9453-433e-9c2a-42e83565c07f",
+      "name": "Market Analyst Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Strategy Agent.\n\nUse the analyst report below:\n\n{{$json.output}}\n\nCreate a GTM strategy with:\n1. Executive summary\n2. ICP\n3. Buyer personas\n4. Value proposition\n5. Positioning statement\n6. Messaging framework\n7. Channel strategy\n8. Launch plan\n9. Success metrics\n10. Risks and mitigations\n\nReturn clean markdown.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1536,
+        0
+      ],
+      "id": "b0258462-3fa6-4a0b-b2df-f3da30fa4371",
+      "name": "Strategy Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        208
+      ],
+      "id": "8a6712d0-3df3-4977-b681-1734ff8a3c3c",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGpy0u1gXD8r0cJ2",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1776,
+        224
+      ],
+      "id": "edf15989-1adf-4f2e-bcff-b024aae299aa",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGpy0u1gXD8r0cJ2",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output",
+        "binaryPropertyName": "=data",
+        "options": {
+          "fileName": "final_gtm_report.txt"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2192,
+        0
+      ],
+      "id": "834a3c9b-488c-46bf-8afd-655d906fa607",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "name": "final_gtm_report.md",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1yVJNtrUU1PnWwiMGLgv-e1wF8y6xRQT-",
+          "mode": "list",
+          "cachedResultName": "Go to Market",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1yVJNtrUU1PnWwiMGLgv-e1wF8y6xRQT-"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2400,
+        0
+      ],
+      "id": "f500dc8e-9032-4a75-a701-2c8a76ffe059",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YMRxjZAf9os1KZgd",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://1efb-74-96-89-90.ngrok-free.app/search ",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.output }} LMS market trends"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        864,
+        240
+      ],
+      "id": "e0057a60-c819-423e-a536-1c0f83185d23",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        272
+      ],
+      "id": "76f85ae1-1f33-4f89-bba2-83e77307f714",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "oGpy0u1gXD8r0cJ2",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Head Planner.\n\nBreak the product brief into a research plan.\n\nProduct brief:\n{{$json.product_brief}}\n\nReturn:\n1. Research questions\n2. Competitor categories\n3. Market areas to investigate\n4. Output structure for the final GTM document",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0ecf74f8-83af-4125-81d2-d82c038b4934",
+      "name": "Head Planner AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Head Planner and final documenter.\n\nCombine the strategy output into a polished final GTM report.\n\nInput:\n{{$json.output}}\n\nFinal structure:\n\n# Market Research and GTM Plan\n\n## 1. Executive Summary\n## 2. Product Brief\n## 3. Research Evidence Summary\n## 4. Target Market\n## 5. Customer Pain Points\n## 6. Competitor Analysis\n## 7. Pricing Matrix\n## 8. SWOT Analysis\n## 9. 4P Marketing Analysis\n## 10. ICP\n## 11. Value Proposition\n## 12. Positioning and Messaging\n## 13. Channel Strategy\n## 14. Launch Plan\n## 15. Success Metrics\n## 16. Risks and Mitigations\n## 17. Source List\n## 18. n8n vs CrewAI Comparison Notes\n\nReturn only final markdown.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1840,
+        0
+      ],
+      "id": "9dc459c3-0be1-48c2-ac07-934cce54bca0",
+      "name": "Documenter Agent"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Head Planner AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Market Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search in SerpApi": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Market Research Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Market Analyst Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Market Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Market Analyst Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Market Analyst Agent": {
+      "main": [
+        [
+          {
+            "node": "Strategy Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Strategy Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strategy Agent": {
+      "main": [
+        [
+          {
+            "node": "Documenter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Documenter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Market Research Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Head Planner AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Head Planner AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Market Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Documenter Agent": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8bda6651-7bd3-4bf0-82a1-483ccb8097a9",
+  "activeVersionId": null,
+  "versionCounter": 278,
+  "triggerCount": 0,
+  "tags": [],
+  "parentFolder": null,
+  "activeVersion": null,
+  "homeProject": {
+    "id": "vHsB9qkPpXDTBjwn",
+    "type": "personal",
+    "name": "Saihith Reddy Suram <suramsaihithreddy@gmail.com>",
+    "icon": null
+  },
+  "sharedWithProjects": [],
+  "usedCredentials": [
+    {
+      "id": "XGBL9Rv0eOXd2ByQ",
+      "name": "SerpApi account",
+      "type": "serpApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "vHsB9qkPpXDTBjwn",
+        "type": "personal",
+        "name": "Saihith Reddy Suram <suramsaihithreddy@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "YMRxjZAf9os1KZgd",
+      "name": "Google Drive OAuth2 API",
+      "type": "googleDriveOAuth2Api",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "vHsB9qkPpXDTBjwn",
+        "type": "personal",
+        "name": "Saihith Reddy Suram <suramsaihithreddy@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "oGpy0u1gXD8r0cJ2",
+      "name": "OpenAI account",
+      "type": "openAiApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "vHsB9qkPpXDTBjwn",
+        "type": "personal",
+        "name": "Saihith Reddy Suram <suramsaihithreddy@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    }
+  ],
+  "scopes": [
+    "workflow:create",
+    "workflow:delete",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update",
+    "workflow:updateRedactionSetting"
+  ],
+  "checksum": "7878975beda4b534455e10b34c1c7f70e2599a67831f0c1d8fea440d3683f02e"
+}
